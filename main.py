@@ -60,11 +60,14 @@ def add():
         f.write(name + "|" + fer.encrypt(pwd.encode()).decode() + "\n")
 
 def view():
-    with open(password_file,'r') as f:
-        for lines in f.readlines():
-            data = lines.rstrip()
-            user,passw = data.split("|")
-            print("User name:",user,",Password",fer.decrypt(passw.encode()).decode())
+    try:
+        with open(password_file,'r') as f:
+            for lines in f.readlines():
+                data = lines.rstrip()
+                user,passw = data.split("|")
+                print("User name:",user,",Password",fer.decrypt(passw.encode()).decode())
+    except:
+        print("No saved passwords")
 
 
 while True:
