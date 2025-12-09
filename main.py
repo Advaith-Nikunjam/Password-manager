@@ -2,11 +2,13 @@ from cryptography.fernet import Fernet
 import tkinter as tk
 from tkinter import simpledialog,messagebox
 
+#   ------     Making the GUI     -------
+
 
 root = tk.Tk()
 root.withdraw()
 
-def ask_text(title,prompt,hidden=True):
+def ask_text(title,prompt,hidden=False):
     while True:
         if hidden:
             value = simpledialog.askstring(title,prompt,show='*')
@@ -25,6 +27,11 @@ def ask_text(title,prompt,hidden=True):
             messagebox.showerror("Error","Please enter a value.")
             continue
         return value
+
+
+
+#     ------- creating or using fernet key  --------
+
 
 while True:
     try:
@@ -47,6 +54,11 @@ while True:
         writing_key()
         continue
 
+
+
+#        --------  User  Login/Signup   ---------
+
+
 while True:
     current_user = ask_text("Login","Enter username: ")
 
@@ -62,7 +74,10 @@ while True:
     users = {}
     with open("users.txt","r") as f:
         for line in f:
-            u,p = line.strip().split(":")
+            line = line.strip()
+            if ":" not in line:
+                continue
+            u,p = line.split(":")
             users[u] = p
 
     if current_user in users:
@@ -86,6 +101,10 @@ while True:
         
 
 password_file = f"{current_user}_passwords.txt"
+
+
+#  ----------  storing user password in specific files   ------------
+
 
 class password_manager:
 
@@ -124,11 +143,45 @@ class password_manager:
         except FileNotFoundError:
             messagebox.showinfo("View Passwords","No saved passwords")
 
-manager = password_manager(password_file,fer)
+
+
+
+
+#   ------------    Search algorithm       -----------
+
+
+class Search_option(password_manager):
+    def search(self,target):
+        try:
+            with open(self.password_file,'r') as f:
+                for line in f:
+                    data = line.rstrip()
+
+                    if "|" not in data:
+                        continue
+                    user,passw = data.split("|",1)
+                    if user.lower() == target.lower():
+                        plain = self.fer.decrypt(passw.encode()).decode()
+                        return plain
+                
+            return None
+        except FileNotFoundError:
+            return None
+
+
+
+
+manager = Search_option(password_file,fer)
+
+
+#     -----------    Main Lopp - Where user inputs his choice    ---------
+
+
+
 while True:
     choice = ask_text(
         "Menu",
-        "Do you want to add a password, view existing ones or do you want to quit: ").lower()
+        "Do you want to add a password, view existing ones, search a specific account or do you want to quit: ").lower()
 
 
     if choice == "q" or choice == "quit":
@@ -141,6 +194,14 @@ while True:
 
     elif choice == "view":
         manager.view()
+
+    elif choice == "search":
+        target = ask_text("Account Name:","Enter Account Name You want to search: ")
+        result = manager.search(target)
+        if result is None:
+            messagebox.showinfo("Search result",f"No Account Name named {target}")
+        else:
+            messagebox.showinfo("Search result",f"Password for {target}:{result}")
 
     else:
         messagebox.showerror("Invalid Choice","Its an invalid choice, Make a valid one")
