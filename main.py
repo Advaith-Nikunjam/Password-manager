@@ -26,16 +26,26 @@ def ask_text(title,prompt,hidden=False):
             continue
         return value
 
+while True:
+    try:
+        def load_key():
+            file = open('key.key','rb')
+            key = file.read()
+            file.close()
+            return key
 
-def load_key():
-    file = open('key.key','rb')
-    key = file.read()
-    file.close()
-    return key
+        key = load_key()
+        fer = Fernet(key)
+        break
 
-key = load_key()
-fer = Fernet(key)
+    except:
+        def writing_key():
+            key = Fernet.generate_key()
+            with open('key.key','wb') as key_file:
+                key_file.write(key)
 
+        writing_key()
+        continue
 
 while True:
     current_user = ask_text("Login","Enter username: ")
