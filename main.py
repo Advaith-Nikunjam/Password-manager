@@ -6,7 +6,7 @@ from tkinter import simpledialog,messagebox
 root = tk.Tk()
 root.withdraw()
 
-def ask_text(title,prompt,hidden=False):
+def ask_text(title,prompt,hidden=True):
     while True:
         if hidden:
             value = simpledialog.askstring(title,prompt,show='*')
@@ -87,39 +87,44 @@ while True:
 
 password_file = f"{current_user}_passwords.txt"
 
+class password_manager:
 
 
-def add():
-    name = ask_text("Account","Account name: ")
-    pwd = ask_text("Password","Password: ")
+    def __init__(self,password_file,fer):
+        self.password_file = password_file
+        self.fer = fer
+
+    def add(self,name,pwd):
+        #name = ask_text("Account","Account name: ")
+        #pwd = ask_text("Password","Password: ")
 
 
-    with open(password_file,'a') as f:
-        f.write(name + "|" + fer.encrypt(pwd.encode()).decode() + "\n")
+        with open(self.password_file,'a') as f:
+            f.write(name + "|" + self.fer.encrypt(pwd.encode()).decode() + "\n")
 
-    messagebox.showinfo("Saved","Password Saved.")
+        messagebox.showinfo("Saved","Password Saved.")
 
-def view():
-    try:
-        with open(password_file,'r') as f:
-            line = f.readlines()
-            if not line:
-                messagebox.showinfo("view password.","No saved Password.")
-                return
-            
-            out = []
+    def view(self):
+        try:
+            with open(self.password_file,'r') as f:
+                line = f.readlines()
+                if not line:
+                    messagebox.showinfo("view password.","No saved Password.")
+                    return
+                
+                out = []
 
-            for lines in line:
-                data = lines.rstrip()
-                if "|" not in data:
-                    continue
-                user,passw = data.split("|",1)
-                out.append(f"User name:{user} , Password:{fer.decrypt(passw.encode()).decode()}")
-            messagebox.showinfo("Saved Passwords","\n".join(out))
-    except FileNotFoundError:
-        messagebox.showinfo("View Passwords","No saved passwords")
+                for lines in line:
+                    data = lines.rstrip()
+                    if "|" not in data:
+                        continue
+                    user,passw = data.split("|",1)
+                    out.append(f"User name:{user} , Password:{self.fer.decrypt(passw.encode()).decode()}")
+                messagebox.showinfo("Saved Passwords","\n".join(out))
+        except FileNotFoundError:
+            messagebox.showinfo("View Passwords","No saved passwords")
 
-
+manager = password_manager(password_file,fer)
 while True:
     choice = ask_text(
         "Menu",
@@ -130,10 +135,12 @@ while True:
         break
 
     elif choice == "add":
-        add()
+        name = ask_text("Account Name","Account Name: ")
+        pwd = ask_text("Password","Password: ")
+        manager.add(name,pwd)
 
     elif choice == "view":
-        view()
+        manager.view()
 
     else:
         messagebox.showerror("Invalid Choice","Its an invalid choice, Make a valid one")
