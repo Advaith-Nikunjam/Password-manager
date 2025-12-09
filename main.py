@@ -17,34 +17,45 @@ def load_key():
 key = load_key()
 fer = Fernet(key)
 
-current_user = input("Enter username: ")
 
-master_pwd = input("Enter master password:")
+while True:
+    current_user = input("Enter username: ")
 
-
-try:
-    open("users.txt",'r').close()
-except:
-    open("users.txt",'w').close()
+    master_pwd = input("Enter master password:")
 
 
-users = {}
-with open("users.txt","r") as f:
-    for line in f:
-        u,p = line.strip().split(":")
-        users[u] = p
+    try:
+        open("users.txt",'r').close()
+    except:
+        open("users.txt",'w').close()
 
 
-if current_user in users:
-    if users[current_user] != master_pwd:
-        print("wrong Password")
-        quit()
-    print("Login Successful")
-else:
-    print("New user created")
-    with open("users.txt","a") as f:
-        f.write(f"{current_user}:{master_pwd}\n")
-    
+    users = {}
+    with open("users.txt","r") as f:
+        for line in f:
+            u,p = line.strip().split(":")
+            users[u] = p
+
+    if current_user in users:
+        if users[current_user] != master_pwd:
+            print("wrong Password")
+            resume = input("Do You want to enter again?(Y/N) ").lower()
+            if resume == "y" or resume == "yes":
+                continue
+            elif resume == "n" or resume == "no":
+                print("Thank You!")
+                quit()
+            else:
+                print("Invalid input")
+                quit()
+        print("Login Successful")
+        break
+    else:
+        print("New user created")
+        with open("users.txt","a") as f:
+            f.write(f"{current_user}:{master_pwd}\n")
+            break
+        
 
 password_file = f"{current_user}_passwords.txt"
 
