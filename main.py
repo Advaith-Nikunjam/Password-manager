@@ -1,13 +1,32 @@
 from cryptography.fernet import Fernet
+import tkinter as tk
+from tkinter import simpledialog,messagebox
 
-'''
-def writing_key():
-    key = Fernet.generate_key()
-    with open('key.key','wb') as key_file:
-        key_file.write(key)
 
-writing_key()
-'''
+root = tk.Tk()
+root.withdraw()
+
+def ask_text(title,prompt,hidden=False):
+    while True:
+        if hidden:
+            value = simpledialog.askstring(title,prompt,show='*')
+        else:
+            value = simpledialog.askstring(title,prompt)
+        
+        if value is None:
+            if messagebox.askyesno("Quit","Do you want to quit:"):
+                root.destroy()
+                quit()
+            else:
+                continue
+        value = value.strip()
+
+        if value == "":
+            messagebox.showerror("Error","Please enter a value.")
+            continue
+        return value
+
+
 def load_key():
     file = open('key.key','rb')
     key = file.read()
@@ -19,9 +38,9 @@ fer = Fernet(key)
 
 
 while True:
-    current_user = input("Enter username: ")
+    current_user = ask_text("Login","Enter username: ")
 
-    master_pwd = input("Enter master password:")
+    master_pwd = ask_text("Password","Enter master password:",hidden=True)
 
 
     try:
@@ -38,20 +57,19 @@ while True:
 
     if current_user in users:
         if users[current_user] != master_pwd:
-            print("wrong Password")
-            resume = input("Do You want to enter again?(Y/N) ").lower()
-            if resume == "y" or resume == "yes":
+
+            retry = messagebox.askyesno("Wrong Password","Wrong Password, do you want to try again?")
+            if retry:
                 continue
-            elif resume == "n" or resume == "no":
-                print("Thank You!")
-                quit()
             else:
-                print("Invalid input")
+                messagebox.showinfo("Exit","Thank you!")
+                root.destroy()
                 quit()
-        print("Login Successful")
+
+        messagebox.showinfo("Login","Login Successful")
         break
     else:
-        print("New user created")
+        messagebox.showinfo("Newuser","New user created")
         with open("users.txt","a") as f:
             f.write(f"{current_user}:{master_pwd}\n")
             break
@@ -62,27 +80,40 @@ password_file = f"{current_user}_passwords.txt"
 
 
 def add():
-    name = input("User name: ")
-    pwd = input("Password: ")
+    name = ask_text("Account","Account name: ")
+    pwd = ask_text("Password","Password: ")
 
-#fer.encrypt(pwd.encode()).decode()
-#fer.decrypt(passw.encode()).decode()
+
     with open(password_file,'a') as f:
         f.write(name + "|" + fer.encrypt(pwd.encode()).decode() + "\n")
+
+    messagebox.showinfo("Saved","Password Saved.")
 
 def view():
     try:
         with open(password_file,'r') as f:
-            for lines in f.readlines():
+            line = f.readlines()
+            if not line:
+                messagebox.showinfo("view password.","No saved Password.")
+                return
+            
+            out = []
+
+            for lines in line:
                 data = lines.rstrip()
-                user,passw = data.split("|")
-                print("User name:",user,",Password",fer.decrypt(passw.encode()).decode())
-    except:
-        print("No saved passwords")
+                if "|" not in data:
+                    continue
+                user,passw = data.split("|",1)
+                out.append(f"User name:{user} , Password:{fer.decrypt(passw.encode()).decode()}")
+            messagebox.showinfo("Saved Passwords","\n".join(out))
+    except FileNotFoundError:
+        messagebox.showinfo("View Passwords","No saved passwords")
 
 
 while True:
-    choice = input("Do you want to add a password or view existing ones, or do you want to quit(q): ").lower()
+    choice = ask_text(
+        "Menu",
+        "Do you want to add a password, view existing ones or do you want to quit: ").lower()
 
 
     if choice == "q" or choice == "quit":
@@ -95,6 +126,6 @@ while True:
         view()
 
     else:
-        print("Its an invalid choice")
-        print("Make a valid one")
-        continue
+        messagebox.showerror("Invalid Choice","Its an invalid choice, Make a valid one")
+        
+root.destroy()
