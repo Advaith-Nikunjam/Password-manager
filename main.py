@@ -1,6 +1,7 @@
 from cryptography.fernet import Fernet
 import tkinter as tk
 from tkinter import simpledialog,messagebox
+import requests
 
 #   ------     Making the GUI     -------
 
@@ -147,6 +148,26 @@ class password_manager:
 
 
 
+class password_creator:
+    def __init__(self):
+        self.base_url = f"https://api.genratr.com/?length=8&uppercase&lowercase&special&numbers"
+    def generate_password(self):
+        
+        url = self.base_url
+        responce = requests.get(url)
+
+        if responce.status_code == 200:
+            return responce.text.strip()
+        else:
+            print(f"Data retrievel failed, Error code: {responce}")
+            return None
+
+
+
+
+random_pass = password_creator()
+
+
 #   ------------    Search algorithm       -----------
 
 
@@ -189,7 +210,25 @@ while True:
 
     elif choice == "add":
         name = ask_text("Account Name","Account Name: ")
-        pwd = ask_text("Password","Password: ")
+        # pwd = ask_text("Password","Password: ")
+
+        auto_pass = messagebox.askyesno(
+            "Password option",
+            "Do you want to auto generate password? "
+        )
+
+        if auto_pass:
+            pwd = random_pass.generate_password()
+            if pwd is None:
+                messagebox.showerror("Error","Could not generate password. create manually")
+                pwd = ask_text("Password","Password: ")
+            
+            else:
+                messagebox.showinfo("Generated Password",f"Generated Password:\n {pwd}")
+
+        else:
+            pwd = ask_text("Password","Password: ")
+
         manager.add(name,pwd)
 
     elif choice == "view":
