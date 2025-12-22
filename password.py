@@ -1,5 +1,4 @@
 from interface import messagebox
-from login import password_file
 from packages import requests
 from key import fer
 
@@ -97,4 +96,3 @@ class PasswordSearch(PasswordManager):
 
 
 
-manager = PasswordSearch(password_file,fer)

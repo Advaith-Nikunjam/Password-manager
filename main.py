@@ -1,13 +1,15 @@
 from interface import ask_text,root,messagebox
-from password import random_pass,manager
-
+from password import random_pass
+from password import PasswordSearch
+from login import password_file
+from key import fer
 
 
 
 #     -----------    Main Code - Where user inputs his choice    ---------
 
 
-
+manager = PasswordSearch(password_file,fer)
 while True:
     choice = ask_text(
         "Menu",
