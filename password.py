@@ -9,7 +9,7 @@ from key import fer
 #  ----------  storing user password in specific files   ------------
 
 
-class password_manager:
+class PasswordManager:
 
 
     def __init__(self,password_file,fer):
@@ -50,7 +50,7 @@ class password_manager:
 
 #     --------------          Random Password Generator (API Integration)          ----------------
 
-class password_creator:
+class PasswordCreator:
     try:
         def __init__(self):
             self.base_url = f"https://api.genratr.com/?length=8&uppercase&lowercase&special&numbers"
@@ -70,13 +70,13 @@ class password_creator:
 
 
 
-random_pass = password_creator()
+random_pass = PasswordCreator()
 
 
 #   ------------    Search algorithm       -----------
 
 
-class Search_option(password_manager):
+class PasswordSearch(PasswordManager):
     def search(self,target):
         try:
             with open(self.password_file,'r') as f:
@@ -97,4 +97,4 @@ class Search_option(password_manager):
 
 
 
-manager = Search_option(password_file,fer)
+manager = PasswordSearch(password_file,fer)

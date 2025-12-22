@@ -1,6 +1,9 @@
+import os
 from interface import ask_text,messagebox,root
 
 
+
+os.makedirs("data",exist_ok=True)
 #        --------  User  Login/Signup   ---------
 
 
@@ -10,10 +13,9 @@ while True:
     master_pwd = ask_text("Password","Enter master password:",hidden=True)
 
 
-    try:
-        open("data/users.txt",'r').close()
-    except:
-        open("data/users.txt",'w').close()
+    if not os.path.exists("data/users.txt"):
+        open("data/users.txt", "w").close()
+
 
 
     users = {}
