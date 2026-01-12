@@ -33,7 +33,7 @@ The application uses a dialog-based **GUI (Tkinter)** and encrypts all stored pa
   - Tkinter dialogs for user interaction
 
 ---
-
+```text
 ## 🏗️ Project Structure
 project/
 ├── main.py
@@ -45,7 +45,6 @@ project/
 ├── README.md
 ├── requirements.txt
 └── data/
-
 
 
 ---
